@@ -1,0 +1,13 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" name="super_market_ssm:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/super_market_ssm_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="super_market_ssm/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="super_market_ssm" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>
