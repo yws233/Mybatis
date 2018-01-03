@@ -11,7 +11,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</select>
 	
 	<!-- 查询用户列表 -->
-	<select id="getUserList" resultType="User">
+	<select id="getUserList" resultType="cn.market.pojo.User">
 		select * from smbms_user
 	</select>
 		
