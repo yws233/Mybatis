@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+    xmlns:p="http://www.springframework.org/schema/p"
+    xmlns:aop="http://www.springframework.org/schema/aop" 
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-3.2.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-3.2.xsd 
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-3.2.xsd ">
+
+
+    <!--  数据源 -->
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource">
+        <property name="driverClassName" value="com.mysql.jdbc.Driver"></property>
+        <property name="url" value="jdbc:mysql://127.0.0.1:3306/smbms?useUnicode=true&amp;characterEncoding=utf-8"></property>
+        <property name="username" value="root"></property>
+        <property name="password" value="yws"></property>
+    </bean>
+    <!-- 配置SqlSessionFactoryBean -->
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource"></property>
+        <property name="configLocation" value="classpath:mybatis-config.xml"></property>
+        <!--如果UserMapper 和 UserMapper.xml文件路径一致，则可省略-->
+        <!--<property name="mapperLocations">
+            <list>
+                <value>classpath:cn/ms/dao/**/*.xml</value>
+            </list>
+        </property>-->
+    </bean>
+
+    <!--  配置SqlSessionTemplate,操作数据库 ,如果是继承至SqlSessionDaoSupport,则无须配置-->
+    <!--<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
+        <constructor-arg name="sqlSessionFactory" ref="sqlSessionFactory"></constructor-arg>
+    </bean>-->
+
+    <!-- Dao -->
+   <!-- <bean id="userMapper" class="cn.ms.dao.UserMapperImpl">
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+    </bean>-->
+    <!-- Dao -->
+    <!--使用MapperFactoryBean操作数据库-->
+    <!--<bean id="userMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="cn.ms.dao.UserMapper"></property>
+        <property name="sqlSessionFactory" ref="sqlSessionFactory"></property>
+    </bean>-->
+    <!-- Dao -->
+    <!--使用MapperScannerConfigurer,自动扫描-->
+    <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
+        <property name="basePackage" value="cn.ms.dao"></property>
+    </bean>
+
+    <!-- Service -->
+    <!-- 扫描注解定义 -->
+     <context:component-scan base-package="cn.ms.service"></context:component-scan>
+
+    <!--业务层声明式事务，XML 和注解 两种方式-->
+    <!--XML方式-->
+    <!--事务管理器-->
+   <!-- <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    &lt;!&ndash;配置事务增强&ndash;&gt;
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="find*" read-only="true"/>  &lt;!&ndash;find*表示所有包含find的方法都配置增强&ndash;&gt;
+            <tx:method name="*"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+    &lt;!&ndash;配置切面，找到事务控制位置&ndash;&gt;
+    <aop:config>
+        <aop:pointcut id="myPointcut" expression="execution(* cn.ms.service..*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="myPointcut"></aop:advisor>
+    </aop:config>-->
+
+    <!--注解方式-->
+    <!--事务管理器-->
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"></property>
+    </bean>
+    <!--配置事务增强-->
+    <tx:annotation-driven transaction-manager="txManager"></tx:annotation-driven>
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="find*" read-only="true"/>  <!--find*表示所有包含find的方法都配置增强-->
+            <tx:method name="*"></tx:method>
+        </tx:attributes>
+    </tx:advice>
+    <!--配置切面，找到事务控制位置-->
+    <aop:config>
+        <aop:pointcut id="myPointcut" expression="execution(* cn.ms.service..*.*(..))"/>
+        <aop:advisor advice-ref="txAdvice" pointcut-ref="myPointcut"></aop:advisor>
+    </aop:config>
+</beans>
